@@ -25,6 +25,12 @@ app.get('/api/test', (req, res) => {
   res.json({ message: "L'API KOCC fonctionne !" });
 });
 
+// Import des routes
+const authRoutes = require('./routes/authRoutes');
+
+// Enregistrement des routes
+app.use('/api/auth', authRoutes);
+
 // Route Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

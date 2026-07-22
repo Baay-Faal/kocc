@@ -27,9 +27,11 @@ app.get('/api/test', (req, res) => {
 
 // Import des routes
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Enregistrement des routes
 app.use('/api/auth', authRoutes);
+app.use('/api', adminRoutes);
 
 // Route Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

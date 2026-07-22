@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 require('dotenv').config();
 const { sequelize } = require('./models');
 const { swaggerUi, swaggerSpec } = require('./config/swagger');
@@ -9,6 +10,9 @@ const PORT = process.env.PORT || 5000;
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rendre le dossier d'uploads public
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route de test
 /**
@@ -28,9 +32,13 @@ app.get('/api/test', (req, res) => {
 // Import des routes
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const documentRoutes = require('./routes/documentRoutes');
 
 // Enregistrement des routes
 app.use('/api/auth', authRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/documents', documentRoutes);
 app.use('/api', adminRoutes);
 
 // Route Swagger

@@ -35,12 +35,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const sessionRoutes = require('./routes/sessionRoutes');
 
 // Enregistrement des routes
 app.use('/api/auth', authRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/mbene', aiRoutes);
+app.use('/api/sessions', sessionRoutes);
 app.use('/api', adminRoutes);
 
 // Route Swagger

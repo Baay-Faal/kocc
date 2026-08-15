@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middlewares/authMiddleware');
-const { getCourseRecallHandler, getAlertesHandler } = require('../controllers/aiController');
+const { getCourseRecallHandler, getAlertesHandler, getStudentTutorHandler } = require('../controllers/aiController');
 
 /**
  * @swagger
@@ -48,5 +48,36 @@ router.get('/rappel-cours', protect, authorize('teacher', 'admin'), getCourseRec
  *         description: Non autorisé (réservé à la direction et aux responsables).
  */
 router.get('/alertes', protect, authorize('direction', 'responsable', 'admin'), getAlertesHandler);
+
+/**
+ * @swagger
+ * /api/mbene/tutor:
+ *   post:
+ *     summary: Poser une question à MBENE tuteur par rapport à un cours spécifique (Student uniquement)
+ *     tags: [Assistant IA MBENE]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseId
+ *               - question
+ *             properties:
+ *               courseId:
+ *                 type: integer
+ *               question:
+ *                 type: string
+ *                 example: Explique-moi Sequelize et les relations.
+ *     responses:
+ *       200:
+ *         description: Explications pédagogiques retournées par MBENE.
+ *       403:
+ *         description: Non autorisé (réservé aux étudiants).
+ */
+router.post('/tutor', protect, authorize('student', 'admin'), getStudentTutorHandler);
 
 module.exports = router;

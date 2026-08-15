@@ -1,5 +1,5 @@
-const { Session, Attendance, User, Class } = require('../models');
-const { getCourseRecall, getRemediationRecommendations } = require('../services/aiService');
+const { Session, Attendance, User, Class, Course } = require('../models');
+const { getCourseRecall, getRemediationRecommendations, getStudentTutorResponse } = require('../services/aiService');
 
 // Assistant MBENE pour enseignant : Rappel et continuité de cours
 const getCourseRecallHandler = async (req, res) => {
@@ -117,7 +117,50 @@ const getAlertesHandler = async (req, res) => {
   }
 };
 
+// Assistant MBENE pour étudiant : Tutorat académique sur une matière
+const getStudentTutorHandler = async (req, res) => {
+  const { courseId, question } = req.body;
+
+  try {
+    if (!courseId || !question) {
+      return res.status(400).json({ message: "Veuillez fournir le courseId et votre question." });
+    }
+
+    const course = await Course.findByPk(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Matière introuvable." });
+    }
+
+    // Récupérer tous les résumés des cours réels dispensés pour ce cours
+    const sessions = await Session.findAll({
+      where: { courseId },
+      order: [['startTime', 'ASC']],
+      attributes: ['summaryOfSession']
+    });
+
+    const summaries = sessions
+      .map(s => s.summaryOfSession)
+      .filter(summary => summary && summary.trim() !== "");
+
+    // Appeler le service Gemini
+    const aiResponse = await getStudentTutorResponse(course.title, summaries, question);
+
+    return res.json({
+      course: {
+        id: course.id,
+        code: course.code,
+        title: course.title
+      },
+      answer: aiResponse
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erreur lors de la génération de la réponse du tuteur." });
+  }
+};
+
 module.exports = {
   getCourseRecallHandler,
-  getAlertesHandler
+  getAlertesHandler,
+  getStudentTutorHandler
 };

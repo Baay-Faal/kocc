@@ -84,6 +84,42 @@ Génère pour chacun des suggestions de remédiation personnalisées et exploita
   }
 };
 
+/**
+ * Service de Tutorat pour Étudiant - MBENE
+ * Répond à la question de l'élève par rapport au contexte du cours.
+ */
+const getStudentTutorResponse = async (courseTitle, sessionSummaries, question) => {
+  if (!genAI) {
+    return getFallbackTutor(question);
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.5,
+        topP: 0.95
+      },
+      systemInstruction: `Tu es MBENE, l'assistant et tuteur virtuel intelligent d'ISI SUPTECH.
+Ton rôle est d'aider l'étudiant à comprendre la matière "${courseTitle}".
+Tu dois répondre à ses questions de manière extrêmement pédagogique, patiente, claire, et constructive.
+Utilise des exemples concrets pour expliquer les notions complexes.
+Voici les résumés des cours réels qui lui ont été dispensés par son professeur pour ce module. Basse-toi dessus en priorité pour rester dans le contexte de son programme :
+${sessionSummaries.map((s, i) => `Séance ${i+1}: "${s}"`).join('\n')}`
+    });
+
+    const prompt = `Question de l'étudiant : "${question}"
+Explique-lui cette notion clairement et de façon adaptée à son programme.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Erreur d'appel API Gemini (StudentTutor) :", error);
+    return getFallbackTutor(question);
+  }
+};
+
 // Fallbacks de secours (en cas d'absence de clé API ou d'erreur réseau)
 const getFallbackCourseRecall = (summary, rate) => {
   return `[Mode dégradé - Service MBENE hors ligne]
@@ -105,7 +141,14 @@ const getFallbackRemediations = (students) => {
   return fallbackText;
 };
 
+const getFallbackTutor = (question) => {
+  return `[Mode dégradé - Service MBENE hors ligne]
+Je suis MBENE, votre tuteur d'ISI SUPTECH. En raison de l'indisponibilité momentanée de l'API intelligente, je ne peux pas formuler de réponse personnalisée à votre question : "${question}".
+Néanmoins, je vous conseille de relire attentivement vos supports de cours ou de vous rapprocher de votre professeur pour clarifier ce point.`;
+};
+
 module.exports = {
   getCourseRecall,
-  getRemediationRecommendations
+  getRemediationRecommendations,
+  getStudentTutorResponse
 };

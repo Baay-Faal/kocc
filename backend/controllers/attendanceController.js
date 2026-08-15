@@ -1,4 +1,5 @@
-const { Attendance, Session, User, Class } = require('../models');
+const { Attendance, Session, User, Class, Course } = require('../models');
+const { sendAbsenceNotification, sendDropoutWarning } = require('../services/mailService');
 
 // Saisie de l'appel pour une séance
 const markAttendance = async (req, res) => {
@@ -9,7 +10,9 @@ const markAttendance = async (req, res) => {
       return res.status(400).json({ message: "Données d'appel invalides ou manquantes." });
     }
 
-    const session = await Session.findByPk(sessionId);
+    const session = await Session.findByPk(sessionId, {
+      include: [{ model: Course, attributes: ['title'] }]
+    });
     if (!session) {
       return res.status(404).json({ message: "Séance introuvable." });
     }
@@ -41,6 +44,42 @@ const markAttendance = async (req, res) => {
         });
       }
       attendanceRecords.push(attendance);
+
+      // Si l'élève est marqué absent, déclencher la notification mail
+      if (status === 'absent') {
+        const student = await User.findByPk(studentId);
+        if (student && student.email) {
+          const courseTitle = session.Course ? session.Course.title : 'Matière';
+          const formattedDate = new Date(session.startTime).toLocaleDateString('fr-FR');
+          sendAbsenceNotification(
+            student.email,
+            `${student.firstName} ${student.lastName}`,
+            courseTitle,
+            formattedDate
+          );
+        }
+      }
+
+      // Vérifier le taux d'assiduité et envoyer une alerte de décrochage à la direction si < 70%
+      const allStudentRecords = await Attendance.findAll({ where: { studentId } });
+      if (allStudentRecords.length >= 2) { // déclenchement après au moins 2 appels pour éviter les fausses alertes au premier cours manqué
+        const attending = allStudentRecords.filter(r => r.status === 'present' || r.status === 'late').length;
+        const rate = Math.round((attending / allStudentRecords.length) * 100);
+
+        if (rate < 70) {
+          const student = await User.findByPk(studentId);
+          const directors = await User.findAll({ where: { role: 'direction' } });
+          for (const dir of directors) {
+            if (dir.email) {
+              sendDropoutWarning(
+                dir.email,
+                `${student.firstName} ${student.lastName}`,
+                rate
+              );
+            }
+          }
+        }
+      }
     }
 
     return res.status(200).json({

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { Document, Course, User } = require('../models');
+const { Document, Course, User, Session } = require('../models');
+const { sendNewDocumentNotification } = require('../services/mailService');
 
 // Téléverser un support de cours (enseignant)
 const uploadDocument = async (req, res) => {
@@ -30,6 +31,32 @@ const uploadDocument = async (req, res) => {
       courseId: parseInt(courseId, 10),
       teacherId: req.user.id // Taken from JWT
     });
+
+    // Envoyer une notification e-mail aux étudiants de cette matière
+    const sessions = await Session.findAll({
+      where: { courseId: parseInt(courseId, 10) },
+      attributes: ['classId']
+    });
+
+    const classIds = [...new Set(sessions.map(s => s.classId))];
+
+    if (classIds.length > 0) {
+      const students = await User.findAll({
+        where: { classId: classIds, role: 'student' },
+        attributes: ['email']
+      });
+
+      const emails = students.map(s => s.email).filter(e => e);
+
+      if (emails.length > 0) {
+        sendNewDocumentNotification(
+          emails,
+          `${req.user.firstName} ${req.user.lastName}`,
+          course.title,
+          title
+        );
+      }
+    }
 
     return res.status(201).json(newDoc);
   } catch (error) {

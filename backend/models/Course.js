@@ -20,6 +20,11 @@ const Course = sequelize.define('Course', {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 2
+  },
+  credits: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 4
   }
 });
 

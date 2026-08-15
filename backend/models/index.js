@@ -6,6 +6,7 @@ const Session = require('./Session');
 const Attendance = require('./Attendance');
 const Grade = require('./Grade');
 const Document = require('./Document');
+const Evaluation = require('./Evaluation');
 
 // Relations d'Utilisateurs
 Class.hasMany(User, { foreignKey: 'classId', as: 'students' });
@@ -32,8 +33,18 @@ Attendance.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
 User.hasMany(Grade, { foreignKey: 'studentId', onDelete: 'CASCADE' });
 Grade.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
 
-Course.hasMany(Grade, { foreignKey: 'courseId', onDelete: 'CASCADE' });
-Grade.belongsTo(Course, { foreignKey: 'courseId' });
+Evaluation.hasMany(Grade, { foreignKey: 'evaluationId', onDelete: 'CASCADE' });
+Grade.belongsTo(Evaluation, { foreignKey: 'evaluationId' });
+
+// Relations d'Évaluations
+Course.hasMany(Evaluation, { foreignKey: 'courseId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(Course, { foreignKey: 'courseId' });
+
+Class.hasMany(Evaluation, { foreignKey: 'classId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(Class, { foreignKey: 'classId' });
+
+User.hasMany(Evaluation, { foreignKey: 'teacherId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' });
 
 // Relations de Documents
 Course.hasMany(Document, { foreignKey: 'courseId', onDelete: 'CASCADE' });
@@ -50,5 +61,6 @@ module.exports = {
   Session,
   Attendance,
   Grade,
-  Document
+  Document,
+  Evaluation
 };

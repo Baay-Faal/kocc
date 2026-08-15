@@ -14,10 +14,6 @@ const Grade = sequelize.define('Grade', {
       min: 0,
       max: 20
     }
-  },
-  evaluationType: {
-    type: DataTypes.ENUM('devoir', 'examen'),
-    allowNull: false
   }
 });
 

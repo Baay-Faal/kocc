@@ -98,8 +98,33 @@ const sendNewDocumentNotification = async (studentsEmails, teacherName, courseTi
   }
 };
 
+// 4. Notification de nouvelle évaluation planifiée aux étudiants de la classe
+const sendNewEvaluationNotification = async (studentsEmails, teacherName, courseTitle, evaluationTitle, type, date) => {
+  if (!studentsEmails || studentsEmails.length === 0) return;
+
+  const typeStr = type === 'examen' ? 'un examen' : 'un devoir';
+  const mailOptions = {
+    from,
+    to: studentsEmails.join(','),
+    subject: `[ISI SUPTECH] Nouvelle évaluation planifiée - ${courseTitle}`,
+    text: `Bonjour,\n\nVotre enseignant ${teacherName} a planifié ${typeStr} intitulé "${evaluationTitle}" pour le cours de "${courseTitle}".\nDate de l'épreuve : ${date}.\n\nPréparez-vous bien !\n\nCordialement,\nL'administration d'ISI SUPTECH.`,
+    html: `<p>Bonjour,</p>
+           <p>Votre enseignant <strong>${teacherName}</strong> a planifié <strong>${typeStr}</strong> intitulé "<strong>${evaluationTitle}</strong>" pour la matière "<em>${courseTitle}</em>".</p>
+           <p><strong>Date de l'épreuve :</strong> ${date}</p>
+           <p>Préparez-vous bien !</p>
+           <p>Cordialement,<br>L'administration d'ISI SUPTECH.</p>`
+  };
+
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'e-mail de planification d'évaluation :", error);
+  }
+};
+
 module.exports = {
   sendAbsenceNotification,
   sendDropoutWarning,
-  sendNewDocumentNotification
+  sendNewDocumentNotification,
+  sendNewEvaluationNotification
 };

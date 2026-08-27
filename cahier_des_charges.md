@@ -41,7 +41,10 @@ kocc-project/
 │   │   ├── studentController.js# Contrôleur pour la gestion scolaire
 │   │   ├── attendanceController.js # Contrôleur pour les présences et alertes
 │   │   ├── documentController.js # Contrôleur pour l'upload de supports de cours
-│   │   └── aiController.js       # Contrôleur d'appel à l'IA MBENE (Gemini)
+│   │   ├── aiController.js       # Contrôleur d'appel à l'IA MBENE (Gemini)
+│   │   ├── sessionController.js  # Contrôleur pour l'emploi du temps (Séances)
+│   │   ├── evaluationController.js# Contrôleur pour les planifications d'évaluations
+│   │   └── gradeController.js    # Contrôleur pour les notes et bulletins LMD
 │   ├── middlewares/
 │   │   ├── authMiddleware.js   # Validation du JWT et rôles
 │   │   └── uploadMiddleware.js # Configuration de Multer pour le stockage local
@@ -53,10 +56,24 @@ kocc-project/
 │   │   ├── Session.js          # Modèle Séance d'emploi du temps
 │   │   ├── Attendance.js       # Modèle Présence (présent, absent, retard)
 │   │   ├── Grade.js            # Modèle Note
-│   │   └── Document.js         # Modèle Fichier de cours
+│   │   ├── Document.js         # Modèle Fichier de cours
+│   │   └── Evaluation.js       # Modèle Évaluation planifiée (Devoir/Examen)
+│   ├── routes/
+│   │   ├── authRoutes.js       # Routes d'authentification
+│   │   ├── adminRoutes.js      # Routes d'administration (CRUD scolaire)
+│   │   ├── attendanceRoutes.js # Routes de feuille d'appel et stats
+│   │   ├── documentRoutes.js   # Routes de gestion de documents
+│   │   ├── aiRoutes.js         # Routes de l'IA MBENE
+│   │   ├── sessionRoutes.js    # Routes d'emploi du temps
+│   │   ├── evaluationRoutes.js # Routes de planification d'épreuves
+│   │   └── gradeRoutes.js      # Routes de saisie de notes et bulletins LMD
+│   ├── services/
+│   │   ├── aiService.js        # Logic d'appel API Gemini 1.5 Flash
+│   │   └── mailService.js      # Service d'envoi d'e-mails automatique (Nodemailer)
 │   ├── uploads/                # Dossier où Multer stockera les fichiers physiques (PDF)
 │   ├── .env                    # Fichier de variables d'environnement backend
 │   ├── package.json            # Dépendances backend
+│   ├── seed.js                 # Script de peuplement de test
 │   └── server.js               # Point d'entrée de l'API Express
 └── frontend/
     ├── public/
@@ -90,11 +107,12 @@ Les définitions de modèles suivantes doivent être respectées de manière str
 ### 3.1 Définition des Tables et Champs
 1.  **User** : `id` (PK, Auto-increment), `firstName` (String), `lastName` (String), `email` (String, Unique), `password` (String), `role` (Enum : `'admin'`, `'teacher'`, `'student'`, `'direction'`, `'responsable'`).
 2.  **Class** : `id` (PK, Auto-increment), `name` (String, unique, ex: "GL3"), `department` (String, ex: "Informatique").
-3.  **Course** : `id` (PK, Auto-increment), `code` (String, unique, ex: "NET201"), `title` (String), `coefficient` (Integer, par défaut 2).
+3.  **Course** : `id` (PK, Auto-increment), `code` (String, unique, ex: "NET201"), `title` (String), `coefficient` (Integer, par défaut 2), `credits` (Integer, par défaut 4).
 4.  **Session** : `id` (PK, Auto-increment), `startTime` (DateTime), `endTime` (DateTime), `classroom` (String), `summaryOfSession` (Text, nullable).
 5.  **Attendance** : `id` (PK, Auto-increment), `status` (Enum : `'present'`, `'absent'`, `'late'`, `'excused'`), `justification` (String, nullable).
-6.  **Grade** : `id` (PK, Auto-increment), `score` (Float, de 0 à 20), `evaluationType` (Enum : `'devoir'`, `'examen'`).
+6.  **Grade** : `id` (PK, Auto-increment), `score` (Float, de 0 à 20).
 7.  **Document** : `id` (PK, Auto-increment), `title` (String), `filePath` (String), `fileType` (String).
+8.  **Evaluation** : `id` (PK, Auto-increment), `title` (String), `type` (Enum : `'devoir'`, `'examen'`), `date` (DateTime), `coefficient` (Float, par défaut 1.0).
 
 ### 3.2 Associations entre les modèles (`models/index.js`)
 ```javascript
@@ -123,8 +141,18 @@ Attendance.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
 User.hasMany(Grade, { foreignKey: 'studentId', onDelete: 'CASCADE' });
 Grade.belongsTo(User, { foreignKey: 'studentId', as: 'student' });
 
-Course.hasMany(Grade, { foreignKey: 'courseId', onDelete: 'CASCADE' });
-Grade.belongsTo(Course, { foreignKey: 'courseId' });
+Evaluation.hasMany(Grade, { foreignKey: 'evaluationId', onDelete: 'CASCADE' });
+Grade.belongsTo(Evaluation, { foreignKey: 'evaluationId' });
+
+// Relations d'Évaluations
+Course.hasMany(Evaluation, { foreignKey: 'courseId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(Course, { foreignKey: 'courseId' });
+
+Class.hasMany(Evaluation, { foreignKey: 'classId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(Class, { foreignKey: 'classId' });
+
+User.hasMany(Evaluation, { foreignKey: 'teacherId', onDelete: 'CASCADE' });
+Evaluation.belongsTo(User, { foreignKey: 'teacherId', as: 'teacher' });
 
 // Relations de Documents
 Course.hasMany(Document, { foreignKey: 'courseId', onDelete: 'CASCADE' });
@@ -184,8 +212,43 @@ Toutes les routes d'API à l'exception de `/api/auth/login` et `/api-docs` doive
     1.  Identifie les étudiants dont le taux d'assiduité est inférieur à 70 %.
     2.  Envoie ces profils anonymisés (`Etudiant_01`, `Etudiant_02`) et leurs statistiques d'absences à l'API Gemini.
     3.  Retourne une liste d'alertes enrichie de recommandations pédagogiques de remédiation générées par l'IA.
+*   `POST /api/mbene/tutor` *(Rôle `'student'`)* :
+    1.  Permet à l'étudiant de poser des questions à l'assistant MBENE sur une matière spécifique (`courseId`).
+    2.  L'assistant utilise le titre de la matière et la totalité des résumés de séances saisis par le professeur comme contexte pour formuler une explication pédagogique personnalisée.
 
-### 4.6 Documentation Swagger (`/api-docs`)
+### 4.6 Emploi du Temps / Séances (`/api/sessions`)
+*   `POST /api/sessions` *(Rôle `'admin'`)* : Planifie une séance d'emploi du temps.
+*   `GET /api/sessions/class/:classId` *(Tous rôles)* : Retourne l'emploi du temps complet d'une classe.
+*   `GET /api/sessions/teacher` *(Rôle `'teacher'`)* : Retourne l'emploi du temps de l'enseignant connecté.
+*   `PUT /api/sessions/:id` *(Rôle `'teacher'`, `'admin'`)* : Met à jour une séance (permet aux professeurs de rédiger le résumé de séance `summaryOfSession`).
+*   `DELETE /api/sessions/:id` *(Rôle `'admin'`)* : Annule une séance.
+
+### 4.7 Planification des Évaluations (`/api/evaluations`)
+*   `POST /api/evaluations` *(Rôle `'teacher'`)* : Planifie un devoir ou un examen.
+    *   *Payload* : `{ title, type ("devoir" / "examen"), date, coefficient, courseId, classId }`
+    *   *Sécurité* : L'enseignant doit obligatoirement être affecté à cette classe/matière dans l'emploi du temps pour pouvoir y programmer une épreuve.
+    *   *Notification* : Envoie automatiquement un e-mail à tous les étudiants de la classe via le service mail.
+*   `GET /api/evaluations/class/:classId` *(Tous rôles)* : Liste toutes les épreuves programmées pour une classe.
+*   `GET /api/evaluations/my` *(Rôle `'teacher'`)* : Liste les épreuves planifiées par l'enseignant connecté.
+
+### 4.8 Saisie des Notes & Bulletins LMD (`/api/grades`)
+*   `POST /api/grades` *(Rôle `'teacher'`)* : Saisie groupée des notes d'un devoir ou d'un examen planifié.
+    *   *Payload* : `{ evaluationId, records: [ { studentId, score }, ... ] }`
+    *   *Sécurité* : Seul l'enseignant créateur de l'évaluation ou l'administrateur peut renseigner les notes.
+*   `GET /api/grades/bulletin/student/:studentId` *(Tous rôles)* : Génère le bulletin semestriel LMD détaillé :
+    *   Moyenne par matière calculée en combinant devoirs (40%) et examens (60%).
+    *   Attribution des crédits LMD associés à chaque matière si moyenne $\ge 10/20$.
+    *   Moyenne générale pondérée et cumul des crédits acquis.
+    *   Verdict final : Semestre validé si l'élève a obtenu $\ge 30$ crédits.
+
+### 4.9 Service de Notifications par E-mail (`services/mailService.js`)
+Service de messagerie automatisé utilisant **Nodemailer** pour notifier les utilisateurs par e-mail en temps réel :
+1.  **Absence** : Envoi d'un e-mail à l'étudiant dès qu'il est marqué absent à un cours pour lui demander un justificatif.
+2.  **Alerte Décrochage** : Envoi d'un e-mail d'alerte à la direction dès qu'un élève descend en dessous du seuil critique d'assiduité (70%).
+3.  **Support de cours** : Notification e-mail collective envoyée aux étudiants d'une classe lorsque l'enseignant ajoute un nouveau fichier.
+4.  **Évaluation planifiée** : Notification e-mail collective envoyée aux étudiants d'une classe dès qu'un devoir ou examen est planifié.
+
+### 4.10 Documentation Swagger (`/api-docs`)
 *   `GET /api-docs` *(Tous rôles)* : Expose l'interface interactive de documentation Swagger UI qui permet d'exécuter en direct des appels de test sur chaque route de l'API.
 
 ---

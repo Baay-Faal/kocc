@@ -712,3 +712,232 @@ body {
 .full-width-btn {
   width: 100%;
 }
+
+/* Timetable Page Layouts */
+.timetable-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.timetable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .timetable-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.class-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+}
+
+.filter-icon {
+  color: var(--text-secondary);
+}
+
+.filter-select {
+  border: none !important;
+  background-color: transparent !important;
+  padding: 0.5rem !important;
+  font-weight: 600;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.agenda-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.agenda-day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.agenda-day-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: capitalize;
+  text-align: left;
+  border-left: 3px solid var(--accent-primary);
+  padding-left: 0.75rem;
+  margin: 0;
+}
+
+.agenda-sessions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.session-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .session-card-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+}
+
+.session-card-time-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-secondary);
+  font-weight: 700;
+  font-size: 1rem;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.session-card-details {
+  flex: 1;
+  text-align: left;
+}
+
+.session-card-course-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.session-card-code {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0.75rem;
+}
+
+.session-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.session-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.session-summary-box {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.summary-text {
+  font-size: 0.875rem;
+  line-height: 145%;
+  color: var(--text-primary);
+  margin: 0;
+  font-style: italic;
+}
+
+.session-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .session-card-actions {
+    width: 100%;
+  }
+}
+
+.action-btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 14, 23, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem;
+  text-align: left;
+}
+
+.modal-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.text-area-input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}

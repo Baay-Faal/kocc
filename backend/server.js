@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 const { sequelize } = require('./models');
 const { swaggerUi, swaggerSpec } = require('./config/swagger');
@@ -8,6 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

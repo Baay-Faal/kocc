@@ -1131,3 +1131,206 @@ body {
 .submit-btn {
   padding: 1rem 2rem;
 }
+
+/* Bulletin Page Layouts */
+.bulletin-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.bulletin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .bulletin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.bulletin-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bulletin-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.student-info-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+}
+
+@media (max-width: 768px) {
+  .student-info-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+}
+
+.student-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.big-avatar {
+  width: 72px !important;
+  height: 72px !important;
+  font-size: 1.5rem !important;
+}
+
+.student-header-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.student-header-fullname {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.student-header-meta {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.student-header-email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.bulletin-verdict-block {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-primary);
+  padding: 1rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .bulletin-verdict-block {
+    width: 100%;
+    text-align: left;
+    justify-content: space-between;
+  }
+}
+
+.verdict-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.verdict-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.verdict-status-title {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0.25rem 0 0;
+  letter-spacing: -0.01em;
+}
+
+.verdict-badge-circle {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-circle {
+  color: var(--success);
+}
+
+.danger-circle {
+  color: var(--danger);
+}
+
+.bulletin-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .bulletin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.table-container-card {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mb-1-5 {
+  margin-bottom: 1.5rem !important;
+}
+
+.course-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.course-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.course-fullname {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.course-code-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}

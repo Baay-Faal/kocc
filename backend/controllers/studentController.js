@@ -279,6 +279,71 @@ const getStudentsByClass = async (req, res) => {
   }
 };
 
+const importStudentsBulk = async (req, res) => {
+  const { students } = req.body;
+
+  try {
+    if (!students || !Array.isArray(students)) {
+      return res.status(400).json({ message: "Format de données invalide." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const defaultPassword = await bcrypt.hash('kocc1234', salt);
+
+    let createdCount = 0;
+    const errors = [];
+    const classCache = {};
+
+    for (const item of students) {
+      const { firstName, lastName, email, className } = item;
+
+      if (!firstName || !lastName || !email || !className) {
+        errors.push({ email: email || 'Inconnu', message: "Champs obligatoires manquants." });
+        continue;
+      }
+
+      const userExists = await User.findOne({ where: { email } });
+      if (userExists) {
+        errors.push({ email, message: "Cet e-mail est déjà utilisé." });
+        continue;
+      }
+
+      let classRecord = classCache[className.toUpperCase()];
+      if (!classRecord) {
+        classRecord = await Class.findOne({ where: { name: className } });
+        if (classRecord) {
+          classCache[className.toUpperCase()] = classRecord;
+        }
+      }
+
+      if (!classRecord) {
+        errors.push({ email, message: `Classe "${className}" introuvable.` });
+        continue;
+      }
+
+      await User.create({
+        firstName,
+        lastName,
+        email,
+        password: defaultPassword,
+        role: 'student',
+        classId: classRecord.id
+      });
+
+      createdCount++;
+    }
+
+    return res.json({
+      message: "Importation en masse terminée.",
+      createdCount,
+      errors
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erreur serveur lors de l'importation." });
+  }
+};
+
 module.exports = {
   createUser,
   getUsers,
@@ -295,5 +360,6 @@ module.exports = {
   getCourseById,
   updateCourse,
   deleteCourse,
-  getStudentsByClass
+  getStudentsByClass,
+  importStudentsBulk
 };

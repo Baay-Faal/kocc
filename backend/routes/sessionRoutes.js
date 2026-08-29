@@ -60,7 +60,7 @@ const {
  *       403:
  *         description: Accès interdit (admin uniquement).
  */
-router.post('/', protect, authorize('admin'), createSession);
+router.post('/', protect, authorize('admin', 'direction'), createSession);
 
 /**
  * @swagger
@@ -74,7 +74,7 @@ router.post('/', protect, authorize('admin'), createSession);
  *       200:
  *         description: Liste de toutes les séances.
  */
-router.get('/', protect, authorize('admin'), getSessions);
+router.get('/', protect, authorize('admin', 'direction'), getSessions);
 
 router.get('/:id', protect, getSessionById);
 
@@ -118,7 +118,7 @@ router.get('/class/:classId', protect, getSessionsByClass);
  */
 router.get('/teacher/:teacherId', protect, authorize('teacher', 'admin'), getSessionsByTeacher);
 
-router.put('/:id', protect, authorize('admin'), updateSession);
-router.delete('/:id', protect, authorize('admin'), deleteSession);
+router.put('/:id', protect, authorize('admin', 'direction'), updateSession);
+router.delete('/:id', protect, authorize('admin', 'direction'), deleteSession);
 
 module.exports = router;

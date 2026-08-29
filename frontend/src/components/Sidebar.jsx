@@ -48,8 +48,8 @@ const Sidebar = () => {
     // Direction & Responsable
     { label: 'Alertes Décrochage', path: '/alerts', icon: AlertOctagon, roles: ['direction', 'responsable', 'admin'] },
     
-    // Admin uniquement
-    { label: 'Classes & Matières', path: '/admin/management', icon: Users, roles: ['admin'] },
+    // Admin & Direction
+    { label: 'Classes & Matières', path: '/admin/management', icon: Users, roles: ['admin', 'direction'] },
   ];
 
   const filteredItems = menuItems.filter(item => item.roles.includes(role));

@@ -5,7 +5,7 @@ const {
   createUser, getUsers, getUserById, updateUser, deleteUser,
   createClass, getClasses, getClassById, updateClass, deleteClass,
   createCourse, getCourses, getCourseById, updateCourse, deleteCourse,
-  getStudentsByClass
+  getStudentsByClass, importStudentsBulk
 } = require('../controllers/studentController');
 
 /**
@@ -60,7 +60,8 @@ const {
  *       403:
  *         description: Non autorisé (non-admin).
  */
-router.post('/users', protect, authorize('admin'), createUser);
+router.post('/users', protect, authorize('admin', 'direction'), createUser);
+router.post('/users/bulk', protect, authorize('admin', 'direction'), importStudentsBulk);
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ router.post('/users', protect, authorize('admin'), createUser);
  *       200:
  *         description: Liste de tous les utilisateurs.
  */
-router.get('/users', protect, authorize('admin'), getUsers);
+router.get('/users', protect, authorize('admin', 'direction'), getUsers);
 
 /**
  * @swagger
@@ -96,7 +97,7 @@ router.get('/users', protect, authorize('admin'), getUsers);
  *       404:
  *         description: Utilisateur non trouvé.
  */
-router.get('/users/:id', protect, authorize('admin'), getUserById);
+router.get('/users/:id', protect, authorize('admin', 'direction'), getUserById);
 
 /**
  * @swagger
@@ -142,7 +143,7 @@ router.put('/users/:id', protect, authorize('admin'), updateUser);
  *       200:
  *         description: Utilisateur supprimé.
  */
-router.delete('/users/:id', protect, authorize('admin'), deleteUser);
+router.delete('/users/:id', protect, authorize('admin', 'direction'), deleteUser);
 
 
 // --- CLASSES CRUD ---
@@ -173,7 +174,7 @@ router.delete('/users/:id', protect, authorize('admin'), deleteUser);
  *       201:
  *         description: Classe créée.
  */
-router.post('/classes', protect, authorize('admin'), createClass);
+router.post('/classes', protect, authorize('admin', 'direction'), createClass);
 
 /**
  * @swagger
@@ -190,8 +191,8 @@ router.post('/classes', protect, authorize('admin'), createClass);
 router.get('/classes', protect, getClasses);
 
 router.get('/classes/:id', protect, getClassById);
-router.put('/classes/:id', protect, authorize('admin'), updateClass);
-router.delete('/classes/:id', protect, authorize('admin'), deleteClass);
+router.put('/classes/:id', protect, authorize('admin', 'direction'), updateClass);
+router.delete('/classes/:id', protect, authorize('admin', 'direction'), deleteClass);
 
 
 // --- COURSES CRUD ---
@@ -224,7 +225,7 @@ router.delete('/classes/:id', protect, authorize('admin'), deleteClass);
  *       201:
  *         description: Cours créé.
  */
-router.post('/courses', protect, authorize('admin'), createCourse);
+router.post('/courses', protect, authorize('admin', 'direction'), createCourse);
 
 /**
  * @swagger
@@ -241,8 +242,8 @@ router.post('/courses', protect, authorize('admin'), createCourse);
 router.get('/courses', protect, getCourses);
 
 router.get('/courses/:id', protect, getCourseById);
-router.put('/courses/:id', protect, authorize('admin'), updateCourse);
-router.delete('/courses/:id', protect, authorize('admin'), deleteCourse);
+router.put('/courses/:id', protect, authorize('admin', 'direction'), updateCourse);
+router.delete('/courses/:id', protect, authorize('admin', 'direction'), deleteCourse);
 
 
 // --- GET STUDENTS BY CLASS ---

@@ -1759,3 +1759,139 @@ body {
 .mt-1 {
   margin-top: 1rem !important;
 }
+
+/* Course Documents Page Layouts */
+.documents-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.documents-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .documents-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.documents-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .documents-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.upload-form-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.upload-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 1rem;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.file-input {
+  padding: 0.75rem !important;
+  font-size: 0.85rem !important;
+  cursor: pointer;
+}
+
+.documents-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.doc-item-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  min-height: 100px;
+}
+
+.doc-card-icon-box {
+  width: 44px;
+  height: 44px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.doc-card-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.doc-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-card-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+.doc-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.doc-action-icon-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0px;
+  flex-shrink: 0;
+}

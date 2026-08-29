@@ -1334,3 +1334,224 @@ body {
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
+/* MBENE Tutor Page Layouts */
+.tutor-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.tutor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .tutor-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.tutor-workspace {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 2rem;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+}
+
+@media (max-width: 1024px) {
+  .tutor-workspace {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
+
+/* Chat card container */
+.chat-card-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0px !important; /* No card padding to allow full width alignment */
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0px;
+}
+
+.chat-history {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: var(--bg-secondary);
+}
+
+.chat-bubble-wrapper {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.user-align {
+  justify-content: flex-end;
+}
+
+.mbene-align {
+  justify-content: flex-start;
+}
+
+.bubble-avatar-mbene {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-light);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chat-bubble {
+  max-width: 75%;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9rem;
+  line-height: 155%;
+  border-radius: 0px;
+}
+
+.bubble-user {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  text-align: right;
+  font-weight: 500;
+}
+
+.bubble-mbene {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.bubble-text {
+  margin: 0 0 0.5rem;
+}
+
+.bubble-text:last-child {
+  margin: 0;
+}
+
+/* Chat Input Bar */
+.chat-input-bar {
+  display: flex;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--bg-primary);
+}
+
+.chat-input-field {
+  flex: 1;
+  border: none !important;
+  background-color: transparent !important;
+  font-size: 0.9rem !important;
+  padding: 1.5rem 2rem !important;
+}
+
+.send-btn {
+  border-radius: 0px;
+  border-left: 1px solid var(--border-light);
+  padding: 1.5rem 2rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.send-btn:hover:not(:disabled) {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* Suggestions Sidebar */
+.suggestions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  text-align: left;
+}
+
+.suggestions-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.help-icon {
+  color: var(--text-muted);
+}
+
+.suggestions-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 150%;
+  margin: 0;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.suggestion-item-btn {
+  width: 100%;
+  padding: 1rem !important;
+  font-size: 0.75rem !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  text-transform: none !important;
+  letter-spacing: 0em !important;
+}
+
+.suggestion-item-btn:hover {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--text-primary) !important;
+}
+
+/* Writing / Typing Animation */
+.writing-animation {
+  animation: pulse 1.5s infinite;
+}
+
+.loading-bubble {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1rem 1.5rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}

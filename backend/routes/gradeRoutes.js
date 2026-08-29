@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middlewares/authMiddleware');
-const { inputGrades, getStudentBulletin } = require('../controllers/gradeController');
+const { inputGrades, getStudentBulletin, getGradesByEvaluation } = require('../controllers/gradeController');
 
 /**
  * @swagger
@@ -50,6 +50,8 @@ const { inputGrades, getStudentBulletin } = require('../controllers/gradeControl
  *         description: Non autorisé (si l'enseignant n'est pas le créateur de l'épreuve).
  */
 router.post('/', protect, authorize('teacher', 'admin'), inputGrades);
+
+router.get('/evaluation/:evaluationId', protect, authorize('teacher', 'admin'), getGradesByEvaluation);
 
 /**
  * @swagger

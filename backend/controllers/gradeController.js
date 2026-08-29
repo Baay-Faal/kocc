@@ -58,6 +58,21 @@ const inputGrades = async (req, res) => {
   }
 };
 
+// Récupérer les notes saisies pour une évaluation donnée
+const getGradesByEvaluation = async (req, res) => {
+  const { evaluationId } = req.params;
+
+  try {
+    const grades = await Grade.findAll({
+      where: { evaluationId: parseInt(evaluationId, 10) }
+    });
+    return res.json(grades);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erreur lors de la récupération des notes." });
+  }
+};
+
 // Moteur de calcul du Bulletin Semestriel LMD
 const getStudentBulletin = async (req, res) => {
   const { studentId } = req.params;
@@ -205,5 +220,6 @@ const getStudentBulletin = async (req, res) => {
 
 module.exports = {
   inputGrades,
-  getStudentBulletin
+  getStudentBulletin,
+  getGradesByEvaluation
 };

@@ -11,6 +11,8 @@ import LmdBulletin from './pages/LmdBulletin';
 import MbeneTutor from './pages/MbeneTutor';
 import AlertsView from './pages/AlertsView';
 import AdminManagement from './pages/AdminManagement';
+import Evaluations from './pages/Evaluations';
+import Grades from './pages/Grades';
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -107,6 +109,27 @@ function App() {
             <ProtectedRoute allowedRoles={['admin']}>
               <DashboardLayout>
                 <AdminManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/evaluations" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher', 'admin']}>
+              <DashboardLayout>
+                <Evaluations />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/grades" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher', 'admin']}>
+              <DashboardLayout>
+                <Grades />
               </DashboardLayout>
             </ProtectedRoute>
           } 

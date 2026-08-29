@@ -46,11 +46,13 @@ const AdminManagement = () => {
 
   // 4. Session (Timetable)
   const [sessionRoom, setSessionRoom] = useState('');
-  const [sessionStart, setSessionStart] = useState('');
-  const [sessionEnd, setSessionEnd] = useState('');
+  const [sessionDate, setSessionDate] = useState('');
+  const [sessionStartHour, setSessionStartHour] = useState('08:00');
+  const [sessionEndHour, setSessionEndHour] = useState('10:00');
   const [sessionClassId, setSessionClassId] = useState('');
   const [sessionCourseId, setSessionCourseId] = useState('');
   const [sessionTeacherId, setSessionTeacherId] = useState('');
+  const [sessionWeeksCount, setSessionWeeksCount] = useState('1');
 
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -230,18 +232,24 @@ const AdminManagement = () => {
     e.preventDefault();
     setSubmitLoading(true);
     try {
+      const startTime = new Date(`${sessionDate}T${sessionStartHour}:00`).toISOString();
+      const endTime = new Date(`${sessionDate}T${sessionEndHour}:00`).toISOString();
+
       await API.post('/sessions', {
         classroom: sessionRoom,
-        startTime: new Date(sessionStart).toISOString(),
-        endTime: new Date(sessionEnd).toISOString(),
+        startTime,
+        endTime,
         classId: parseInt(sessionClassId, 10),
         courseId: parseInt(sessionCourseId, 10),
-        teacherId: parseInt(sessionTeacherId, 10)
+        teacherId: parseInt(sessionTeacherId, 10),
+        weeksCount: parseInt(sessionWeeksCount, 10)
       });
-      setMessage({ type: 'success', text: "Séance de cours ajoutée à l'emploi du temps." });
+      setMessage({ type: 'success', text: "Séance(s) de cours ajoutée(s) à l'emploi du temps." });
       setSessionRoom('');
-      setSessionStart('');
-      setSessionEnd('');
+      setSessionDate('');
+      setSessionStartHour('08:00');
+      setSessionEndHour('10:00');
+      setSessionWeeksCount('1');
     } catch (err) {
       setMessage({ type: 'danger', text: "Erreur lors de la planification de la séance." });
     } finally {
@@ -530,22 +538,32 @@ const AdminManagement = () => {
                   />
                 </div>
                 <div className="input-group">
-                  <label className="input-label">Date & Heure de début</label>
+                  <label className="input-label">Date du premier cours</label>
                   <input
-                    type="datetime-local"
+                    type="date"
                     className="kocc-input"
-                    value={sessionStart}
-                    onChange={(e) => setSessionStart(e.target.value)}
+                    value={sessionDate}
+                    onChange={(e) => setSessionDate(e.target.value)}
                     required
                   />
                 </div>
                 <div className="input-group">
-                  <label className="input-label">Date & Heure de fin</label>
+                  <label className="input-label">Heure de début</label>
                   <input
-                    type="datetime-local"
+                    type="time"
                     className="kocc-input"
-                    value={sessionEnd}
-                    onChange={(e) => setSessionEnd(e.target.value)}
+                    value={sessionStartHour}
+                    onChange={(e) => setSessionStartHour(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <label className="input-label">Heure de fin</label>
+                  <input
+                    type="time"
+                    className="kocc-input"
+                    value={sessionEndHour}
+                    onChange={(e) => setSessionEndHour(e.target.value)}
                     required
                   />
                 </div>
@@ -587,6 +605,18 @@ const AdminManagement = () => {
                       <option key={t.id} value={t.id}>{t.firstName} {t.lastName}</option>
                     ))}
                   </select>
+                </div>
+                <div className="input-group">
+                  <label className="input-label">Nombre de semaines (Répétition)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    className="kocc-input"
+                    value={sessionWeeksCount}
+                    onChange={(e) => setSessionWeeksCount(e.target.value)}
+                    required
+                  />
                 </div>
                 <button type="submit" className="kocc-btn kocc-btn-primary full-width-btn" disabled={submitLoading || classes.length === 0 || courses.length === 0 || teachers.length === 0}>
                   Ajouter au planning

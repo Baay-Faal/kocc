@@ -2,23 +2,35 @@ const { Session, Class, Course, User } = require('../models');
 
 // Créer une séance d'emploi du temps (Admin)
 const createSession = async (req, res) => {
-  const { startTime, endTime, classroom, classId, courseId, teacherId } = req.body;
+  const { startTime, endTime, classroom, classId, courseId, teacherId, weeksCount } = req.body;
 
   try {
     if (!startTime || !endTime || !classroom || !classId || !courseId || !teacherId) {
       return res.status(400).json({ message: "Tous les champs sont obligatoires." });
     }
 
-    const session = await Session.create({
-      startTime,
-      endTime,
-      classroom,
-      classId,
-      courseId,
-      teacherId
-    });
+    const count = parseInt(weeksCount, 10) || 1;
+    const sessionsToCreate = [];
 
-    return res.status(201).json(session);
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    for (let i = 0; i < count; i++) {
+      const currentStart = new Date(start.getTime() + i * 7 * 24 * 60 * 60 * 1000);
+      const currentEnd = new Date(end.getTime() + i * 7 * 24 * 60 * 60 * 1000);
+
+      sessionsToCreate.push({
+        startTime: currentStart,
+        endTime: currentEnd,
+        classroom,
+        classId,
+        courseId,
+        teacherId
+      });
+    }
+
+    const sessions = await Session.bulkCreate(sessionsToCreate);
+    return res.status(201).json(sessions[0]); // Retourner la première séance créée
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Erreur lors de la création de la séance." });

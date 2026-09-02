@@ -7,6 +7,11 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true
   },
+  matricule: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: true
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
@@ -30,6 +35,14 @@ const User = sequelize.define('User', {
   role: {
     type: DataTypes.ENUM('admin', 'teacher', 'student', 'direction', 'responsable'),
     allowNull: false
+  },
+  specialty: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 });
 

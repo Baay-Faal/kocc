@@ -79,13 +79,40 @@ const getAlertesHandler = async (req, res) => {
       // Seuil d'assiduité critique inférieur à 70%
       if (rate < 70) {
         const alias = `Etudiant_${String(aliasCounter++).padStart(2, '0')}`;
+        let severity = 'modere';
+        let severityLabel = 'Modéré';
+        let badgeClass = 'kocc-badge-info';
+
+        if (rate < 25) {
+          severity = 'critique';
+          severityLabel = 'Critique Extrême';
+          badgeClass = 'kocc-badge-danger';
+        } else if (rate < 45) {
+          severity = 'eleve';
+          severityLabel = 'Décrochage Élevé';
+          badgeClass = 'kocc-badge-warning';
+        } else if (rate < 60) {
+          severity = 'modere';
+          severityLabel = 'Décrochage Modéré';
+          badgeClass = 'kocc-badge-warning';
+        } else {
+          severity = 'vigilance';
+          severityLabel = 'Vigilance Préventive';
+          badgeClass = 'kocc-badge-info';
+        }
+
         atRiskStudents.push({
           id: student.id,
           firstName: student.firstName,
           lastName: student.lastName,
+          matricule: student.matricule || 'N/A',
+          email: student.email,
           className: student.class ? student.class.name : "N/A",
           alias,
-          attendanceRate: rate
+          attendanceRate: rate,
+          severity,
+          severityLabel,
+          badgeClass
         });
       }
     }
@@ -94,7 +121,7 @@ const getAlertesHandler = async (req, res) => {
       return res.json({
         message: "Tous les étudiants présentent un taux d'assiduité satisfaisant (supérieur à 70%).",
         atRiskStudents: [],
-        aiRecommendations: "Aucune action de remédiation nécessaire pour le moment."
+        aiRecommendations: []
       });
     }
 
@@ -107,9 +134,34 @@ const getAlertesHandler = async (req, res) => {
     // 4. Appeler le service Gemini
     const aiRecommendations = await getRemediationRecommendations(anonymizedList);
 
+    // 5. Attacher les recommandations et diagnostics à chaque étudiant
+    const recMap = {};
+    if (Array.isArray(aiRecommendations)) {
+      aiRecommendations.forEach(rec => {
+        recMap[rec.alias] = rec;
+      });
+    }
+
+    const enrichedStudents = atRiskStudents.map(student => {
+      const recData = recMap[student.alias] || {
+        diagnosis: "Analyse des causes d'absence et d'engagement en cours.",
+        recommendations: [
+          "Entretien individuel avec le responsable pédagogique.",
+          "Vérification des justificatifs d'absence.",
+          "Mise à disposition des supports de cours de rattrapage."
+        ]
+      };
+
+      return {
+        ...student,
+        diagnosis: recData.diagnosis,
+        recommendations: recData.recommendations
+      };
+    });
+
     return res.json({
-      atRiskStudents, // Contient les vrais noms pour l'affichage de l'interface Direction
-      aiRecommendations // Recommandations anonymes générées par l'IA
+      atRiskStudents: enrichedStudents,
+      aiRecommendations
     });
   } catch (error) {
     console.error(error);

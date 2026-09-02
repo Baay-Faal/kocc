@@ -11,7 +11,8 @@ import {
   Award, 
   Users, 
   BookOpen, 
-  Sliders 
+  Sliders,
+  GraduationCap 
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -48,6 +49,9 @@ const Sidebar = () => {
     // Direction & Responsable
     { label: 'Alertes Décrochage', path: '/alerts', icon: AlertOctagon, roles: ['direction', 'responsable', 'admin'] },
     
+    // Annuaire Étudiants & Enseignants
+    { label: 'Étudiants & Professeurs', path: '/directory', icon: GraduationCap, roles: ['admin', 'direction', 'teacher'] },
+
     // Admin & Direction
     { label: 'Classes & Matières', path: '/admin/management', icon: Users, roles: ['admin', 'direction'] },
   ];

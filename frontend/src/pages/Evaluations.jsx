@@ -162,7 +162,6 @@ const Evaluations = () => {
                   className="kocc-input filter-select"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                 >
                   <option value="devoir">Devoir (Continu)</option>
                   <option value="examen">Examen (Semestriel)</option>
@@ -202,7 +201,6 @@ const Evaluations = () => {
                   className="kocc-input filter-select"
                   value={selectedCourseId}
                   onChange={(e) => setSelectedCourseId(e.target.value)}
-                  style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                 >
                   {courses.map(c => (
                     <option key={c.id} value={c.id}>{c.title}</option>
@@ -217,7 +215,6 @@ const Evaluations = () => {
                   className="kocc-input filter-select"
                   value={selectedClassId}
                   onChange={(e) => setSelectedClassId(e.target.value)}
-                  style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                 >
                   {classes.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>

@@ -13,11 +13,15 @@ import {
   MapPin,
   Clock,
   Layers,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Search,
+  Filter
 } from 'lucide-react';
 
 const AdminManagement = () => {
   const [activeTab, setActiveTab] = useState('classes');
+  const [userFilterQuery, setUserFilterQuery] = useState('');
+  const [userFilterClass, setUserFilterClass] = useState('all');
   
   // Lists data
   const [classes, setClasses] = useState([]);
@@ -465,7 +469,6 @@ const AdminManagement = () => {
                     className="kocc-input filter-select"
                     value={userRole}
                     onChange={(e) => setUserRole(e.target.value)}
-                    style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                   >
                     <option value="student">Étudiant (Student)</option>
                     <option value="teacher">Enseignant (Teacher)</option>
@@ -481,7 +484,6 @@ const AdminManagement = () => {
                       className="kocc-input filter-select"
                       value={userClassId}
                       onChange={(e) => setUserClassId(e.target.value)}
-                      style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                     >
                       {classes.map(c => (
                         <option key={c.id} value={c.id}>{c.name}</option>
@@ -573,7 +575,6 @@ const AdminManagement = () => {
                     className="kocc-input filter-select"
                     value={sessionClassId}
                     onChange={(e) => setSessionClassId(e.target.value)}
-                    style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                   >
                     {classes.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -586,7 +587,6 @@ const AdminManagement = () => {
                     className="kocc-input filter-select"
                     value={sessionCourseId}
                     onChange={(e) => setSessionCourseId(e.target.value)}
-                    style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                   >
                     {courses.map(c => (
                       <option key={c.id} value={c.id}>{c.title}</option>
@@ -599,7 +599,6 @@ const AdminManagement = () => {
                     className="kocc-input filter-select"
                     value={sessionTeacherId}
                     onChange={(e) => setSessionTeacherId(e.target.value)}
-                    style={{ border: '1px solid var(--border-light) !important', backgroundColor: 'var(--bg-primary) !important', padding: '1rem !important' }}
                   >
                     {teachers.map(t => (
                       <option key={t.id} value={t.id}>{t.firstName} {t.lastName}</option>
@@ -664,16 +663,66 @@ const AdminManagement = () => {
           ) : activeTab === 'users' && users.length === 0 ? (
             <p className="empty-placeholder">Aucun utilisateur enregistré.</p>
           ) : activeTab === 'users' ? (
-            <div className="doc-cards-grid">
-              {users.map(u => (
-                <div key={u.id} className="kocc-card doc-item-card">
-                  <div className="doc-card-icon-box"><Users size={20} /></div>
-                  <div className="doc-card-body text-left">
-                    <h4 className="doc-card-title">{u.firstName} {u.lastName}</h4>
-                    <p className="doc-card-meta">Rôle: <strong>{u.role.toUpperCase()}</strong> • Email: {u.email}</p>
-                  </div>
+            <div>
+              {/* Barre de recherche et filtre rapide */}
+              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 180px', position: 'relative' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                  <input
+                    type="text"
+                    className="kocc-input"
+                    style={{ paddingLeft: '2.2rem', paddingRight: '0.8rem', width: '100%', fontSize: '0.85rem' }}
+                    placeholder="Filtrer par nom, matricule..."
+                    value={userFilterQuery}
+                    onChange={(e) => setUserFilterQuery(e.target.value)}
+                  />
                 </div>
-              ))}
+                <select
+                  className="kocc-input filter-select"
+                  style={{ width: 'auto', minWidth: '130px', fontSize: '0.85rem' }}
+                  value={userFilterClass}
+                  onChange={(e) => setUserFilterClass(e.target.value)}
+                >
+                  <option value="all">Toutes classes</option>
+                  {classes.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="doc-cards-grid">
+                {users
+                  .filter(u => {
+                    if (userFilterClass !== 'all' && String(u.classId) !== String(userFilterClass)) {
+                      return false;
+                    }
+                    if (userFilterQuery.trim() !== '') {
+                      const q = userFilterQuery.toLowerCase();
+                      const matchName = `${u.firstName} ${u.lastName}`.toLowerCase().includes(q);
+                      const matchMat = u.matricule ? u.matricule.toLowerCase().includes(q) : false;
+                      const matchEmail = u.email.toLowerCase().includes(q);
+                      return matchName || matchMat || matchEmail;
+                    }
+                    return true;
+                  })
+                  .slice(0, 50)
+                  .map(u => (
+                    <div key={u.id} className="kocc-card doc-item-card">
+                      <div className="doc-card-icon-box"><Users size={20} /></div>
+                      <div className="doc-card-body text-left">
+                        <h4 className="doc-card-title">{u.firstName} {u.lastName}</h4>
+                        <p className="doc-card-meta">
+                          Rôle: <strong>{u.role.toUpperCase()}</strong>
+                          {u.matricule && <> • Matricule: <strong>{u.matricule}</strong></>}
+                          {u.class && <> • Classe: <strong>{u.class.name}</strong></>}
+                          {u.specialty && <> • Spécialité: <em>{u.specialty}</em></>}
+                          <br />
+                          Email: {u.email}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           ) : (
             <p className="empty-placeholder">Veuillez utiliser le formulaire de gauche pour planifier de nouvelles heures.</p>

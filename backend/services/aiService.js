@@ -61,23 +61,40 @@ const getRemediationRecommendations = async (anonymizedStudents) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
       generationConfig: {
-        temperature: 0.3,
-        topP: 0.95
+        temperature: 0.6,
+        topP: 0.95,
+        responseMimeType: "application/json"
       },
       systemInstruction: `Tu es MBENE, l'assistant virtuel intelligent d'aide à la décision d'ISI SUPTECH.
-Ton rôle est d'analyser la liste anonymisée des étudiants en situation de décrochage scolaire (taux d'assiduité sous le seuil critique de 70 %) et de proposer des recommandations de remédiation pédagogique et de suivi administratif.
-Pour chaque étudiant répertorié :
-1. Rappelle brièvement son identifiant (ex: Etudiant_01) et sa statistique d'assiduité.
-2. Propose 2 à 3 actions de remédiation très ciblées (ex: entretien de motivation, tutorat par les pairs, ou aménagement du temps d'études).`
+Ton rôle est d'analyser la liste anonymisée des étudiants en situation de décrochage scolaire (taux d'assiduité sous le seuil critique de 70 %) et de proposer un diagnostic précis et 3 recommandations concrètes d'actions par étudiant.
+Règles strictes :
+- N'utilise AUCUN emoji dans tes réponses. Utilise un ton académique, rigoureux et professionnel.
+- Réponds impérativement sous forme de tableau JSON valide au format suivant :
+[
+  {
+    "alias": "Etudiant_01",
+    "diagnosis": "Diagnostic précis de la situation et du risque d'abandon.",
+    "recommendations": [
+      "Action prioritaire 1",
+      "Action 2",
+      "Action 3"
+    ]
+  }
+]`
     });
 
     const prompt = `Voici la liste anonymisée des étudiants en situation de décrochage (assiduité < 70%) :
 ${JSON.stringify(anonymizedStudents, null, 2)}
-Génère pour chacun des suggestions de remédiation personnalisées et exploitables pour la direction.`;
+Génère pour chacun son diagnostic et ses 3 recommandations personnalisées sans aucun emoji.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    return getFallbackRemediations(anonymizedStudents);
   } catch (error) {
     console.error("Erreur d'appel API Gemini (Remediations) :", error);
     return getFallbackRemediations(anonymizedStudents);
@@ -102,8 +119,7 @@ const getStudentTutorResponse = async (courseTitle, sessionSummaries, question) 
       },
       systemInstruction: `Tu es MBENE, l'assistant et tuteur virtuel intelligent d'ISI SUPTECH.
 Ton rôle est d'aider l'étudiant à comprendre la matière "${courseTitle}".
-Tu dois répondre à ses questions de manière extrêmement pédagogique, patiente, claire, et constructive.
-Utilise des exemples concrets pour expliquer les notions complexes.
+Tu dois répondre à ses questions de manière extrêmement pédagogique, patiente, claire, et constructive. N'utilise aucun emoji.
 Voici les résumés des cours réels qui lui ont été dispensés par son professeur pour ce module. Basse-toi dessus en priorité pour rester dans le contexte de son programme :
 ${sessionSummaries.map((s, i) => `Séance ${i+1}: "${s}"`).join('\n')}`
     });
@@ -132,13 +148,47 @@ const getFallbackCourseRecall = (summary, rate) => {
 };
 
 const getFallbackRemediations = (students) => {
-  let fallbackText = `[Mode dégradé - Service MBENE hors ligne] Recommandations de remédiation génériques :\n`;
-  students.forEach(student => {
-    fallbackText += `\n- Profil : ${student.alias} (Taux d'assiduité : ${student.attendanceRate}%)\n`;
-    fallbackText += `  * Recommandation 1 : Convoquer l'étudiant à un entretien d'explication pédagogique pour identifier la cause de l'absentéisme.\n`;
-    fallbackText += `  * Recommandation 2 : Proposer le rattrapage des supports de cours via un tuteur ou la plateforme en ligne.\n`;
+  return students.map((student) => {
+    const rate = student.attendanceRate;
+    let diagnosis = '';
+    let recs = [];
+
+    if (rate < 25) {
+      diagnosis = `Situation de décrochage critique extrême (Assiduité : ${rate}%). Rupture quasi-totale d'assiduité signalant un désengagement majeur ou un empêchement sérieux, avec risque imminent d'abandon définitif ou d'exclusion.`;
+      recs = [
+        "Convocation d'urgence de l'étudiant et de ses tuteurs légaux sous 48 heures pour clarifier la poursuite du cursus.",
+        "Signature d'un contrat pédagogique d'assiduité stricte avec pointage physique obligatoire à chaque cours.",
+        "Orientation vers la cellule d'écoute médico-sociale et d'accompagnement de l'institut pour lever les freins matériels ou personnels."
+      ];
+    } else if (rate < 45) {
+      diagnosis = `Absentéisme chronique élevé (Assiduité : ${rate}%). L'étudiant a manqué plus de la moitié des enseignements fondamentaux et accumule des lacunes structurelles qui menacent l'obtention de son semestre.`;
+      recs = [
+        "Binôme de parrainage obligatoire : Affectation d'un étudiant tuteur de GL3 pour la remise à niveau des cours manqués.",
+        "Accès prioritaire aux supports de cours numérisés, exercices corrigés et labs sur la plateforme KOCC.",
+        "Entretien individuel avec le responsable pédagogique pour évaluer un réaménagement de planning ou un problème d'accès aux transports."
+      ];
+    } else if (rate < 60) {
+      diagnosis = `Érosion d'assiduité modérée mais préoccupante (Assiduité : ${rate}%). L'étudiant décroche progressivement et risque de passer sous les moyennes requises si un redressement n'est pas amorcé.`;
+      recs = [
+        "Entretien de remédiation ciblé avec les enseignants des matières où les absences sont les plus récurrentes.",
+        "Intégration dans un groupe de travail supervisé pour les devoirs continus et projets en équipe.",
+        "Bilan d'assiduité bimensuel intermédiaire transmis directement à la direction pour suivi régulier."
+      ];
+    } else {
+      diagnosis = `Vigilance préventive (Assiduité : ${rate}%). L'étudiant se situe juste sous la barre de sécurité des 70%, une réaction rapide permettra de rétablir un parcours serein.`;
+      recs = [
+        "Avertissement formel par e-mail avec rappel des conditions d'attribution des crédits semestriels LMD.",
+        "Régularisation obligatoire des justificatifs d'absence (certificats médicaux ou dispenses) auprès de la scolarité.",
+        "Auto-évaluation en ligne sur MBENE Tuteur pour consolider les notions clés abordées durant les séances manquées."
+      ];
+    }
+
+    return {
+      alias: student.alias,
+      diagnosis,
+      recommendations: recs
+    };
   });
-  return fallbackText;
 };
 
 const getFallbackTutor = (question) => {

@@ -13,6 +13,7 @@ import AlertsView from './pages/AlertsView';
 import AdminManagement from './pages/AdminManagement';
 import Evaluations from './pages/Evaluations';
 import Grades from './pages/Grades';
+import Directory from './pages/Directory';
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -109,6 +110,16 @@ function App() {
             <ProtectedRoute allowedRoles={['admin', 'direction']}>
               <DashboardLayout>
                 <AdminManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/directory" 
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'direction', 'teacher']}>
+              <DashboardLayout>
+                <Directory />
               </DashboardLayout>
             </ProtectedRoute>
           } 

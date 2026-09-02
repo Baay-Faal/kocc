@@ -75,7 +75,7 @@ router.post('/users/bulk', protect, authorize('admin', 'direction'), importStude
  *       200:
  *         description: Liste de tous les utilisateurs.
  */
-router.get('/users', protect, authorize('admin', 'direction', 'teacher'), getUsers);
+router.get('/users', protect, authorize('admin', 'direction'), getUsers);
 
 /**
  * @swagger

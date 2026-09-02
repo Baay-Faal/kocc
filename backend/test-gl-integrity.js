@@ -60,7 +60,7 @@ async function verifyIntegrity() {
       console.log('✓ Format des matricules permanent conforme (ex: ISI-2026-00001).');
     }
 
-    // 4. Unicité des emails
+    // 4. Unicité et propreté des emails (sans suffixe de classe)
     const emails = students.map(s => s.email);
     const uniqueEmails = new Set(emails);
     console.log(`\n[Test 4] Emails : ${uniqueEmails.size} uniques pour ${emails.length} étudiants`);
@@ -69,6 +69,14 @@ async function verifyIntegrity() {
       errors++;
     } else {
       console.log('✓ Tous les emails étudiants sont strictement uniques.');
+    }
+
+    const classSuffixEmails = emails.filter(e => /\.gl[123]/i.test(e));
+    if (classSuffixEmails.length > 0) {
+      console.error(`❌ Des emails contiennent encore un suffixe de classe (.gl1/.gl2/.gl3) : ${classSuffixEmails.slice(0, 3).join(', ')}`);
+      errors++;
+    } else {
+      console.log('✓ Aucun email ne contient de suffixe de classe temporaire (.gl1/.gl2/.gl3).');
     }
 
     // 5. Professeurs

@@ -14,6 +14,7 @@ import AdminManagement from './pages/AdminManagement';
 import Evaluations from './pages/Evaluations';
 import Grades from './pages/Grades';
 import Directory from './pages/Directory';
+import TeacherClasses from './pages/TeacherClasses';
 
 const DashboardLayout = ({ children }) => {
   return (
@@ -117,9 +118,19 @@ function App() {
         <Route 
           path="/directory" 
           element={
-            <ProtectedRoute allowedRoles={['admin', 'direction', 'teacher']}>
+            <ProtectedRoute allowedRoles={['admin', 'direction']}>
               <DashboardLayout>
                 <Directory />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/my-classes" 
+          element={
+            <ProtectedRoute allowedRoles={['teacher', 'admin', 'direction']}>
+              <DashboardLayout>
+                <TeacherClasses />
               </DashboardLayout>
             </ProtectedRoute>
           } 

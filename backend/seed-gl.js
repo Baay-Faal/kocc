@@ -144,6 +144,9 @@ const seedGl = async () => {
     // 5. Création des 240 Étudiants avec matricule permanent immuable
     console.log('\n--- 4. CRÉATION DES 240 ÉTUDIANTS (100 L1, 80 L2, 60 L3) ---');
     const studentsData = [];
+    const usedStudentEmails = new Set(teachersData.map(t => t.email));
+    usedStudentEmails.add('admin@isi.sn');
+    usedStudentEmails.add('direction@isi.sn');
 
     const generateStudentBatch = (count, className, year, startId) => {
       const classId = classMap[className].id;
@@ -155,10 +158,18 @@ const seedGl = async () => {
         // Matricule permanent : ISI-AAAA-XXXXX (ex: ISI-2026-00042)
         const matricule = `ISI-${year}-${String(i).padStart(5, '0')}`;
         
-        // Email unique réaliste
+        // Email institutionnel propre (sans .gl1, .gl2, .gl3 - permanent pour l'étudiant)
         const cleanFn = fn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '');
         const cleanLn = ln.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '');
-        const email = `${cleanFn}.${cleanLn}.${className.toLowerCase()}${String(i).padStart(3, '0')}@isi.sn`;
+        
+        const baseEmail = `${cleanFn}.${cleanLn}`;
+        let email = `${baseEmail}@isi.sn`;
+        let counter = 2;
+        while (usedStudentEmails.has(email)) {
+          email = `${baseEmail}${counter}@isi.sn`;
+          counter++;
+        }
+        usedStudentEmails.add(email);
 
         studentsData.push({
           matricule,

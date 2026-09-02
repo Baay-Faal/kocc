@@ -37,6 +37,7 @@ const Sidebar = () => {
     { label: 'Emploi du Temps', path: '/timetable', icon: Calendar, roles: ['admin', 'teacher', 'student', 'direction', 'responsable'] },
     
     // Professeur
+    { label: 'Mes Classes', path: '/my-classes', icon: Users, roles: ['teacher'] },
     { label: 'Faire l\'Appel', path: '/attendance', icon: CheckSquare, roles: ['teacher'] },
     { label: 'Supports de Cours', path: '/documents', icon: FileText, roles: ['teacher', 'student'] },
     { label: 'Évaluations', path: '/evaluations', icon: BookOpen, roles: ['teacher'] },
@@ -49,11 +50,11 @@ const Sidebar = () => {
     // Direction & Responsable
     { label: 'Alertes Décrochage', path: '/alerts', icon: AlertOctagon, roles: ['direction', 'responsable', 'admin'] },
     
-    // Annuaire Étudiants & Enseignants
-    { label: 'Étudiants & Professeurs', path: '/directory', icon: GraduationCap, roles: ['admin', 'direction', 'teacher'] },
+    // Annuaire Étudiants & Enseignants (Admin & Direction uniquement)
+    { label: 'Étudiants & Professeurs', path: '/directory', icon: GraduationCap, roles: ['admin', 'direction'] },
 
     // Admin & Direction
-    { label: 'Classes & Matières', path: '/admin/management', icon: Users, roles: ['admin', 'direction'] },
+    { label: 'Classes & Matières', path: '/admin/management', icon: BookOpen, roles: ['admin', 'direction'] },
   ];
 
   const filteredItems = menuItems.filter(item => item.roles.includes(role));

@@ -40,6 +40,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const evaluationRoutes = require('./routes/evaluationRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
+const teacherRoutes = require('./routes/teacherRoutes');
 
 // Enregistrement des routes
 app.use('/api/auth', authRoutes);
@@ -49,6 +50,7 @@ app.use('/api/mbene', aiRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/evaluations', evaluationRoutes);
 app.use('/api/grades', gradeRoutes);
+app.use('/api/teacher', teacherRoutes);
 app.use('/api', adminRoutes);
 
 // Route Swagger

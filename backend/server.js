@@ -60,7 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 sequelize.authenticate()
   .then(() => {
     console.log('Connexion à la base de données MySQL établie avec succès.');
-    return sequelize.sync({ alter: true });
+    return sequelize.sync();
   })
   .then(() => {
     console.log('Base de données synchronisée avec les modèles.');

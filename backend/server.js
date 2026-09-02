@@ -56,6 +56,8 @@ app.use('/api', adminRoutes);
 // Route Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+const { initDailyCron } = require('./services/reminderService');
+
 // Test de connexion à la base de données, synchronisation des tables et lancement du serveur
 sequelize.authenticate()
   .then(() => {
@@ -67,6 +69,9 @@ sequelize.authenticate()
     app.listen(PORT, () => {
       console.log(`Le serveur écoute sur le port ${PORT}`);
       console.log(`Swagger UI disponible sur http://localhost:${PORT}/api-docs`);
+      
+      // Activer le planificateur automatique des rappels de la veille MBENE (20h00)
+      initDailyCron();
     });
   })
   .catch(err => {

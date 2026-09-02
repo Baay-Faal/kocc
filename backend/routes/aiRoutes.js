@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middlewares/authMiddleware');
-const { getCourseRecallHandler, getAlertesHandler, getStudentTutorHandler } = require('../controllers/aiController');
+const { getCourseRecallHandler, getAlertesHandler, getStudentTutorHandler, triggerEveBriefingHandler } = require('../controllers/aiController');
 
 /**
  * @swagger
@@ -79,5 +79,30 @@ router.get('/alertes', protect, authorize('direction', 'responsable', 'admin'), 
  *         description: Non autorisé (réservé aux étudiants).
  */
 router.post('/tutor', protect, authorize('student', 'admin'), getStudentTutorHandler);
+
+/**
+ * @swagger
+ * /api/mbene/send-eve-briefing:
+ *   post:
+ *     summary: Déclencher manuellement le Briefing de la Veille MBENE envoyé aux enseignants (Tous rôles autorisés)
+ *     tags: [Assistant IA MBENE]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date optionnelle cible au format AAAA-MM-JJ (par défaut demain).
+ *                 example: 2026-09-03
+ *     responses:
+ *       200:
+ *         description: Résumé des briefings expédiés par e-mail avec les conseils pédagogiques MBENE.
+ */
+router.post('/send-eve-briefing', protect, triggerEveBriefingHandler);
 
 module.exports = router;

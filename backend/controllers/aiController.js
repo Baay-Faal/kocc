@@ -211,8 +211,23 @@ const getStudentTutorHandler = async (req, res) => {
   }
 };
 
+// Déclencheur manuel ou de simulation du Briefing de la Veille MBENE
+const triggerEveBriefingHandler = async (req, res) => {
+  try {
+    const { reminderService } = require('../services/reminderService');
+    const { generateAndSendEveBriefings } = require('../services/reminderService');
+    const { date } = req.body || {};
+    const result = await generateAndSendEveBriefings(date);
+    return res.json(result);
+  } catch (error) {
+    console.error('Erreur triggerEveBriefingHandler:', error);
+    return res.status(500).json({ message: "Erreur lors de l'envoi des briefings de la veille." });
+  }
+};
+
 module.exports = {
   getCourseRecallHandler,
   getAlertesHandler,
-  getStudentTutorHandler
+  getStudentTutorHandler,
+  triggerEveBriefingHandler
 };

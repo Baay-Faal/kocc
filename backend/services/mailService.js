@@ -122,9 +122,81 @@ const sendNewEvaluationNotification = async (studentsEmails, teacherName, course
   }
 };
 
+// 5. Briefing de la veille envoyé au professeur par MBENE
+const sendTeacherEveBriefing = async (teacherEmail, teacherName, targetDateFormatted, sessions) => {
+  const sessionsText = sessions.map((s, idx) => {
+    return `${idx + 1}. [${s.time}] ${s.courseTitle}
+   - Classe : ${s.className} (${s.studentCount || 'Tous'} étudiants)
+   - Salle : ${s.classroom}
+   - Rappel MBENE : ${s.mbeneAdvice}`;
+  }).join('\n\n');
+
+  const sessionsHtml = sessions.map((s) => `
+    <div style="background-color: #1a1a1a; border: 1px solid #333333; padding: 16px; margin-bottom: 16px; border-radius: 6px;">
+      <div style="margin-bottom: 8px;">
+        <span style="background-color: #ffffff; color: #000000; font-weight: bold; font-size: 12px; padding: 3px 8px; border-radius: 3px; display: inline-block;">
+          ${s.time}
+        </span>
+        <span style="color: #888888; font-size: 13px; margin-left: 10px;">
+          Salle : <strong style="color: #ffffff;">${s.classroom}</strong> • Classe : <strong style="color: #ffffff;">${s.className}</strong>
+        </span>
+      </div>
+      <h3 style="color: #ffffff; margin: 8px 0; font-size: 16px;">${s.courseTitle}</h3>
+      <div style="background-color: #111111; border-left: 3px solid #3b82f6; padding: 10px 12px; margin-top: 10px; font-size: 13px; color: #cccccc; line-height: 1.5;">
+        <strong style="color: #60a5fa; display: block; margin-bottom: 4px;">🧠 Conseil Pédagogique MBENE :</strong>
+        ${s.mbeneAdvice}
+      </div>
+    </div>
+  `).join('');
+
+  const mailOptions = {
+    from,
+    to: teacherEmail,
+    subject: `[KOCC ISI SUPTECH] 📅 Vos cours de demain (${targetDateFormatted}) - Briefing MBENE`,
+    text: `Bonjour ${teacherName},\n\nVoici le récapitulatif de vos cours prévus demain (${targetDateFormatted}) à ISI SUPTECH :\n\n${sessionsText}\n\nBonne préparation de séance !\n\nCordialement,\nL'assistant IA MBENE & La Direction des Études.`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0d0d0d; color: #ffffff; padding: 24px; max-width: 650px; margin: 0 auto; border-radius: 8px;">
+        <div style="border-bottom: 1px solid #262626; padding-bottom: 16px; margin-bottom: 20px;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px; letter-spacing: -0.5px;">KOCC.</h1>
+          <p style="color: #888888; margin: 4px 0 0; font-size: 13px;">Briefing Pédagogique Quotidien • ISI SUPTECH</p>
+        </div>
+
+        <p style="font-size: 15px; color: #e5e5e5;">Bonjour <strong>${teacherName}</strong>,</p>
+        <p style="font-size: 14px; color: #aaaaaa; line-height: 1.5;">
+          Voici le planning et les conseils pédagogiques de l'assistant IA <strong>MBENE</strong> pour vos cours prévus demain, <strong>${targetDateFormatted}</strong> :
+        </p>
+
+        <div style="margin: 24px 0;">
+          ${sessionsHtml}
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #262626;">
+          <a href="http://localhost:5173/attendance" style="background-color: #ffffff; color: #000000; text-decoration: none; padding: 10px 20px; font-weight: bold; font-size: 13px; border-radius: 4px; display: inline-block; margin-right: 10px;">
+            Faire l'Appel
+          </a>
+          <a href="http://localhost:5173/documents" style="background-color: #262626; color: #ffffff; text-decoration: none; padding: 10px 20px; font-weight: bold; font-size: 13px; border-radius: 4px; display: inline-block;">
+            Supports de Cours
+          </a>
+        </div>
+
+        <p style="font-size: 12px; color: #666666; margin-top: 30px; text-align: center;">
+          Ce message automatique est envoyé la veille de vos cours par votre assistant pédagogique MBENE pour ISI SUPTECH.
+        </p>
+      </div>
+    `
+  };
+
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi du briefing de la veille :", error);
+  }
+};
+
 module.exports = {
   sendAbsenceNotification,
   sendDropoutWarning,
   sendNewDocumentNotification,
-  sendNewEvaluationNotification
+  sendNewEvaluationNotification,
+  sendTeacherEveBriefing
 };

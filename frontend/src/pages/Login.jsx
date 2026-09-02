@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import { setAuth } from '../services/auth';
 import { Lock, Mail, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -16,14 +18,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await API.post('/auth/login', { email, password });
+      const response = await API.post('/auth/login', { email, password, rememberMe });
       
-      // Enregistrer les données de session éphémère (effacé automatiquement à la fermeture du navigateur)
-      sessionStorage.setItem('kocc_token', response.data.token);
-      sessionStorage.setItem('kocc_user', JSON.stringify(response.data.user));
-      // Nettoyer l'ancien stockage persistant
-      localStorage.removeItem('kocc_token');
-      localStorage.removeItem('kocc_user');
+      // Stockage intelligent : persistant (7j) si rememberMe, éphémère (session) sinon
+      setAuth(response.data.token, response.data.user, rememberMe);
 
       // Redirection vers le dashboard
       navigate('/', { replace: true });
@@ -88,6 +86,26 @@ const Login = () => {
                 required
               />
             </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.25rem', marginBottom: '1.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-secondary)', userSelect: 'none' }}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{
+                  accentColor: 'var(--accent-primary)',
+                  width: '16px',
+                  height: '16px',
+                  cursor: 'pointer'
+                }}
+              />
+              <span>Se souvenir de moi</span>
+            </label>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              {rememberMe ? 'Session 7 jours' : 'Session éphémère'}
+            </span>
           </div>
 
           <button

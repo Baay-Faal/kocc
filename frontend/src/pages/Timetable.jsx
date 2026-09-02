@@ -14,9 +14,11 @@ import {
   BookOpen
 } from 'lucide-react';
 
+import { getUser } from '../services/auth';
+
 const Timetable = () => {
   const navigate = useNav();
-  const userJson = sessionStorage.getItem('kocc_user');
+  const user = getUser();
   
   const [sessions, setSessions] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -29,8 +31,7 @@ const Timetable = () => {
   // Semaine de navigation
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0); // 0 = Semaine en cours, -1 = Précédente, +1 = Suivante
 
-  if (!userJson) return null;
-  const user = JSON.parse(userJson);
+  if (!user) return null;
   const { role } = user;
 
   const isAdminOrDirection = role === 'admin' || role === 'direction' || role === 'responsable';

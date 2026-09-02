@@ -3,14 +3,14 @@ const jwt = require('jsonwebtoken');
 const { User, Class } = require('../models');
 require('dotenv').config();
 
-const generateToken = (id) => {
+const generateToken = (id, rememberMe = false) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'super_secret_kocc_jwt_key_1234567890', {
-    expiresIn: '8h'
+    expiresIn: rememberMe ? '7d' : '8h'
   });
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   try {
     if (!email || !password) {
@@ -24,7 +24,8 @@ const login = async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       return res.json({
-        token: generateToken(user.id),
+        token: generateToken(user.id, !!rememberMe),
+        rememberMe: !!rememberMe,
         user: {
           id: user.id,
           firstName: user.firstName,

@@ -15,21 +15,19 @@ import {
   GraduationCap 
 } from 'lucide-react';
 
+import { getUser, clearAuth } from '../services/auth';
+
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userJson = sessionStorage.getItem('kocc_user');
+  const user = getUser();
   
-  if (!userJson) return null;
+  if (!user) return null;
   
-  const user = JSON.parse(userJson);
   const { role, firstName, lastName } = user;
 
   const handleLogout = () => {
-    sessionStorage.removeItem('kocc_token');
-    sessionStorage.removeItem('kocc_user');
-    localStorage.removeItem('kocc_token');
-    localStorage.removeItem('kocc_user');
+    clearAuth();
     navigate('/login', { replace: true });
   };
 

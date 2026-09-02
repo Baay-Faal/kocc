@@ -13,15 +13,16 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import { getUser } from '../services/auth';
+
 const Dashboard = () => {
   const navigate = useNavigate();
-  const userJson = sessionStorage.getItem('kocc_user');
+  const user = getUser();
   const [stats, setStats] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (!userJson) return null;
-  const user = JSON.parse(userJson);
+  if (!user) return null;
   const { role, firstName, lastName } = user;
 
   useEffect(() => {

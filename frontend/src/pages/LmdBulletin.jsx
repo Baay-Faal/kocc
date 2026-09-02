@@ -11,8 +11,10 @@ import {
   Filter
 } from 'lucide-react';
 
+import { getUser } from '../services/auth';
+
 const LmdBulletin = () => {
-  const userJson = sessionStorage.getItem('kocc_user');
+  const user = getUser();
   
   const [bulletin, setBulletin] = useState(null);
   const [classes, setClasses] = useState([]);
@@ -22,8 +24,7 @@ const LmdBulletin = () => {
   const [loading, setLoading] = useState(true);
   const [bulletinLoading, setBulletinLoading] = useState(false);
 
-  if (!userJson) return null;
-  const user = JSON.parse(userJson);
+  if (!user) return null;
   const { role } = user;
 
   const isStudent = role === 'student';

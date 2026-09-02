@@ -9,8 +9,10 @@ import {
   Clock
 } from 'lucide-react';
 
+import { getUser } from '../services/auth';
+
 const MbeneTutor = () => {
-  const userJson = sessionStorage.getItem('kocc_user');
+  const user = getUser();
   
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState('');
@@ -19,8 +21,7 @@ const MbeneTutor = () => {
   const [loading, setLoading] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
-  if (!userJson) return null;
-  const user = JSON.parse(userJson);
+  if (!user) return null;
 
   useEffect(() => {
     const fetchStudentCourses = async () => {

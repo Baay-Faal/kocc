@@ -256,3 +256,5 @@ Tous les comptes créés partagent le mot de passe universel : **`kocc1234`**.
 
 Développé pour l'institut **ISI SUPTECH** - Département Informatique & Génie Logiciel.
 Propulsé par la vision d'une éducation numérique moderne, accessible et intelligente au Sénégal.
+
+                                                                                                           </Baay_Hacker>

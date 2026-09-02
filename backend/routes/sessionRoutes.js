@@ -76,6 +76,26 @@ router.post('/', protect, authorize('admin', 'direction'), createSession);
  */
 router.get('/', protect, authorize('admin', 'direction'), getSessions);
 
+/**
+ * @swagger
+ * /api/sessions/{id}:
+ *   get:
+ *     summary: Récupérer le détail d'une séance par son ID
+ *     tags: [Timetables]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Séance trouvée.
+ *       404:
+ *         description: Séance non trouvée.
+ */
 router.get('/:id', protect, getSessionById);
 
 /**
@@ -118,7 +138,54 @@ router.get('/class/:classId', protect, getSessionsByClass);
  */
 router.get('/teacher/:teacherId', protect, authorize('teacher', 'admin'), getSessionsByTeacher);
 
-router.put('/:id', protect, authorize('admin', 'direction'), updateSession);
+/**
+ * @swagger
+ * /api/sessions/{id}:
+ *   put:
+ *     summary: Mettre à jour une séance d'emploi du temps ou son cahier de textes (Admin / Direction / Prof)
+ *     tags: [Timetables]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               summary:
+ *                 type: string
+ *               classroom:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Séance mise à jour.
+ */
+router.put('/:id', protect, authorize('admin', 'direction', 'teacher'), updateSession);
+
+/**
+ * @swagger
+ * /api/sessions/{id}:
+ *   delete:
+ *     summary: Supprimer une séance d'emploi du temps (Admin / Direction)
+ *     tags: [Timetables]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Séance supprimée.
+ */
 router.delete('/:id', protect, authorize('admin', 'direction'), deleteSession);
 
 module.exports = router;

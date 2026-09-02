@@ -61,6 +61,48 @@ const {
  *         description: Non autorisé (non-admin).
  */
 router.post('/users', protect, authorize('admin', 'direction'), createUser);
+
+/**
+ * @swagger
+ * /api/users/bulk:
+ *   post:
+ *     summary: Importer des étudiants en masse (Admin & Direction)
+ *     tags: [Administration (Users)]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - students
+ *             properties:
+ *               students:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - firstName
+ *                     - lastName
+ *                     - email
+ *                     - classId
+ *                   properties:
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     classId:
+ *                       type: integer
+ *     responses:
+ *       201:
+ *         description: Étudiants importés avec succès.
+ *       403:
+ *         description: Non autorisé (réservé admin et direction).
+ */
 router.post('/users/bulk', protect, authorize('admin', 'direction'), importStudentsBulk);
 
 /**
@@ -190,8 +232,76 @@ router.post('/classes', protect, authorize('admin', 'direction'), createClass);
  */
 router.get('/classes', protect, getClasses);
 
+/**
+ * @swagger
+ * /api/classes/{id}:
+ *   get:
+ *     summary: Récupérer une classe par son ID
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Classe trouvée.
+ *       404:
+ *         description: Classe non trouvée.
+ */
 router.get('/classes/:id', protect, getClassById);
+
+/**
+ * @swagger
+ * /api/classes/{id}:
+ *   put:
+ *     summary: Mettre à jour une classe (Admin & Direction)
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               department:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Classe mise à jour.
+ */
 router.put('/classes/:id', protect, authorize('admin', 'direction'), updateClass);
+
+/**
+ * @swagger
+ * /api/classes/{id}:
+ *   delete:
+ *     summary: Supprimer une classe (Admin & Direction)
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Classe supprimée.
+ */
 router.delete('/classes/:id', protect, authorize('admin', 'direction'), deleteClass);
 
 
@@ -241,8 +351,78 @@ router.post('/courses', protect, authorize('admin', 'direction'), createCourse);
  */
 router.get('/courses', protect, getCourses);
 
+/**
+ * @swagger
+ * /api/courses/{id}:
+ *   get:
+ *     summary: Récupérer un cours/matière par son ID
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Cours trouvé.
+ *       404:
+ *         description: Cours non trouvé.
+ */
 router.get('/courses/:id', protect, getCourseById);
+
+/**
+ * @swagger
+ * /api/courses/{id}:
+ *   put:
+ *     summary: Mettre à jour un cours/matière (Admin & Direction)
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *               credits:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Cours mis à jour.
+ */
 router.put('/courses/:id', protect, authorize('admin', 'direction'), updateCourse);
+
+/**
+ * @swagger
+ * /api/courses/{id}:
+ *   delete:
+ *     summary: Supprimer un cours/matière (Admin & Direction)
+ *     tags: [School Administration (Classes & Courses)]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Cours supprimé.
+ */
 router.delete('/courses/:id', protect, authorize('admin', 'direction'), deleteCourse);
 
 

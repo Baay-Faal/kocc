@@ -51,6 +51,26 @@ const { inputGrades, getStudentBulletin, getGradesByEvaluation } = require('../c
  */
 router.post('/', protect, authorize('teacher', 'admin'), inputGrades);
 
+/**
+ * @swagger
+ * /api/grades/evaluation/{evaluationId}:
+ *   get:
+ *     summary: Récupérer les notes enregistrées pour une évaluation donnée (Teacher & Admin)
+ *     tags: [Grades & Bulletins]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: evaluationId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Liste des notes de l'évaluation.
+ *       403:
+ *         description: Non autorisé (réservé aux enseignants et administrateurs).
+ */
 router.get('/evaluation/:evaluationId', protect, authorize('teacher', 'admin'), getGradesByEvaluation);
 
 /**

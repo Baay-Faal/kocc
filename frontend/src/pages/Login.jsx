@@ -18,9 +18,12 @@ const Login = () => {
     try {
       const response = await API.post('/auth/login', { email, password });
       
-      // Enregistrer les données de session en local
-      localStorage.setItem('kocc_token', response.data.token);
-      localStorage.setItem('kocc_user', JSON.stringify(response.data.user));
+      // Enregistrer les données de session éphémère (effacé automatiquement à la fermeture du navigateur)
+      sessionStorage.setItem('kocc_token', response.data.token);
+      sessionStorage.setItem('kocc_user', JSON.stringify(response.data.user));
+      // Nettoyer l'ancien stockage persistant
+      localStorage.removeItem('kocc_token');
+      localStorage.removeItem('kocc_user');
 
       // Redirection vers le dashboard
       navigate('/', { replace: true });

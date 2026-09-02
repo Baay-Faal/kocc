@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 const MbeneTutor = () => {
-  const userJson = localStorage.getItem('kocc_user');
+  const userJson = sessionStorage.getItem('kocc_user');
   
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState('');

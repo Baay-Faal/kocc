@@ -18,7 +18,7 @@ import {
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userJson = localStorage.getItem('kocc_user');
+  const userJson = sessionStorage.getItem('kocc_user');
   
   if (!userJson) return null;
   
@@ -26,6 +26,8 @@ const Sidebar = () => {
   const { role, firstName, lastName } = user;
 
   const handleLogout = () => {
+    sessionStorage.removeItem('kocc_token');
+    sessionStorage.removeItem('kocc_user');
     localStorage.removeItem('kocc_token');
     localStorage.removeItem('kocc_user');
     navigate('/login', { replace: true });

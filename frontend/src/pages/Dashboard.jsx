@@ -15,7 +15,7 @@ import {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const userJson = localStorage.getItem('kocc_user');
+  const userJson = sessionStorage.getItem('kocc_user');
   const [stats, setStats] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
   const [loading, setLoading] = useState(true);

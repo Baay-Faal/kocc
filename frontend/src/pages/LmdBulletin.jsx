@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 const LmdBulletin = () => {
-  const userJson = localStorage.getItem('kocc_user');
+  const userJson = sessionStorage.getItem('kocc_user');
   
   const [bulletin, setBulletin] = useState(null);
   const [classes, setClasses] = useState([]);

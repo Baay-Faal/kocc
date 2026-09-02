@@ -2,11 +2,11 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const token = localStorage.getItem('kocc_token');
-  const userJson = localStorage.getItem('kocc_user');
+  const token = sessionStorage.getItem('kocc_token');
+  const userJson = sessionStorage.getItem('kocc_user');
 
   if (!token || !userJson) {
-    // Redirection vers login si non connecté
+    // Redirection vers login si non connecté ou si le navigateur a été fermé
     return <Navigate to="/login" replace />;
   }
 

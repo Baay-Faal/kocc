@@ -5,10 +5,10 @@ const API = axios.create({
   timeout: 10000,
 });
 
-// Intercepteur de requête : injecte le token JWT de façon transparente et sécurisée
+// Intercepteur de requête : injecte le token JWT depuis sessionStorage (volatile)
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('kocc_token');
+    const token = sessionStorage.getItem('kocc_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -25,6 +25,8 @@ API.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       console.warn("Session expirée ou non autorisée. Redirection vers la connexion.");
+      sessionStorage.removeItem('kocc_token');
+      sessionStorage.removeItem('kocc_user');
       localStorage.removeItem('kocc_token');
       localStorage.removeItem('kocc_user');
       if (window.location.pathname !== '/login') {

@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'super_secret_kocc_jwt_key_1234567890', {
-    expiresIn: '30d'
+    expiresIn: '8h'
   });
 };
 

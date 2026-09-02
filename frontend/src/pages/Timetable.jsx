@@ -16,7 +16,7 @@ import {
 
 const Timetable = () => {
   const navigate = useNav();
-  const userJson = localStorage.getItem('kocc_user');
+  const userJson = sessionStorage.getItem('kocc_user');
   
   const [sessions, setSessions] = useState([]);
   const [classes, setClasses] = useState([]);
